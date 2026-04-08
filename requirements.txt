@@ -1,6 +1,5 @@
 fastapi==0.110.0
 uvicorn[standard]==0.29.0
-streamlit==1.33.0
 
 pandas==2.1.4
 numpy==1.26.4
@@ -10,9 +9,4 @@ scikit-learn==1.3.2
 xgboost==2.0.3
 joblib==1.3.2
 
-matplotlib==3.8.2
-seaborn==0.13.2
-
 imbalanced-learn==0.11.0
-lightgbm==4.1.0
-shap==0.44.1
