@@ -3,7 +3,7 @@ uvicorn[standard]
 streamlit
 pandas
 numpy
-scikit-learn
+scikit-learn==1.7.1
 xgboost
 joblib
 matplotlib
@@ -12,4 +12,5 @@ scipy
 imbalanced-learn
 lightgbm
 shap
+imblearn
 
