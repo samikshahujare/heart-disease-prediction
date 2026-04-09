@@ -17,7 +17,9 @@ def _ensure_project_on_path() -> None:
 
 _ensure_project_on_path()
 
-from model.predict import get_feature_metadata, predict_single  # noqa: E402
+import requests
+
+API_URL = "https://your-render-url.onrender.com/predict" # noqa: E402
 
 
 def _css() -> None:
@@ -100,7 +102,13 @@ def main() -> None:
 
     if submitted:
         try:
-            result = predict_single(inputs)
+            response = requests.post(API_URL, json=inputs)
+
+            if response.status_code == 200:
+                result = response.json()
+            else:
+                st.error(f"API Error: {response.text}")
+                st.stop()
             pred = result["prediction"]
             prob = float(result["probability"])
             interpretation = result["interpretation"]
