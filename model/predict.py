@@ -219,7 +219,14 @@ def predict_single(features: Dict[str, Any]) -> Dict[str, Any]:
         raise RuntimeError(f"Model prediction failed: {e}") from e
 
     pred = int(prob >= threshold)
-    interpretation = "High Risk" if pred == 1 else "Low Risk"
+    if prob < 0.3:
+        risk_level = "Low Risk"
+    elif prob < 0.7:
+        risk_level = "Medium Risk"
+    else:
+        risk_level = "High Risk"
+
+    interpretation = risk_level
     risk_level = _risk_level(prob, risk_thresholds)
     confidence = _confidence(prob)
 
