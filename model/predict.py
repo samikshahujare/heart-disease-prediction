@@ -181,6 +181,7 @@ def predict_single(features: Dict[str, Any]) -> Dict[str, Any]:
 
         # 🔥 FIX: flip probability
         prob = float(model.predict_proba(X_trans)[0][1])
+        
     except Exception as e:
         raise RuntimeError(f"Prediction pipeline failed: {e}") from e
 

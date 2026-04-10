@@ -80,23 +80,25 @@ def _infer_target_column(df: pd.DataFrame) -> str:
     return df.columns[-1]
 
 
-def _coerce_binary_target(y: pd.Series) -> Tuple[np.ndarray, Dict[str, Any]]:
+def _coerce_binary_target(y: pd.Series):
     """
-    Ensures y is {0,1} with stable mapping.
+    Ensures correct medical meaning:
+    0 = No Disease
+    1 = Disease
     """
 
     y_unique = sorted(pd.unique(y.dropna()))
-    if len(y_unique) != 2:
-        raise ValueError(f"Target must be binary with 2 unique values. Got: {y_unique}")
 
     if set(y_unique) == {0, 1}:
+        # ✅ KEEP ORIGINAL MEANING
         return y.astype(int).to_numpy(), {"mapping": {0: 0, 1: 1}}
 
-    # Map smaller value to 0, larger to 1
+    # If not 0/1 → map explicitly
     mapping = {y_unique[0]: 0, y_unique[1]: 1}
-    y_bin = y.map(mapping).astype(int).to_numpy()
-    return y_bin, {"mapping": mapping}
 
+    y_bin = y.map(mapping).astype(int).to_numpy()
+
+    return y_bin, {"mapping": mapping}
 
 def _infer_feature_types(df: pd.DataFrame, feature_columns: List[str]) -> Tuple[List[str], List[str]]:
     """
