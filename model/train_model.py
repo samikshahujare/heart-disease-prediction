@@ -79,27 +79,6 @@ def _infer_target_column(df: pd.DataFrame) -> str:
     # Fallback: last column
     return df.columns[-1]
 
-
-def _coerce_binary_target(y: pd.Series):
-    """
-    Ensures correct medical meaning:
-    0 = No Disease
-    1 = Disease
-    """
-
-    y_unique = sorted(pd.unique(y.dropna()))
-
-    if set(y_unique) == {0, 1}:
-        # ✅ KEEP ORIGINAL MEANING
-        return y.astype(int).to_numpy(), {"mapping": {0: 0, 1: 1}}
-
-    # If not 0/1 → map explicitly
-    mapping = {y_unique[0]: 0, y_unique[1]: 1}
-
-    y_bin = y.map(mapping).astype(int).to_numpy()
-
-    return y_bin, {"mapping": mapping}
-
 def _infer_feature_types(df: pd.DataFrame, feature_columns: List[str]) -> Tuple[List[str], List[str]]:
     """
     Infers categorical vs numeric columns in a data-driven way.
@@ -363,9 +342,24 @@ def train_advanced(
     if not feature_user_columns:
         raise ValueError("No feature columns found.")
 
+# ================== ✅ FIXED TARGET LOGIC ==================
+
     X_user = df[feature_user_columns].copy()
+
+    # Correct target extraction
     y_raw = df[target_col].copy()
-    y, target_info = _coerce_binary_target(y_raw)
+
+    # Force correct binary meaning
+    # 0 = No Disease, 1 = Disease
+    y = y_raw.astype(int)
+
+    # Validation
+    if set(y.unique()) != {0, 1}:
+        raise ValueError("Target must contain exactly {0,1}")
+
+    print("✅ Target distribution:\n", y.value_counts())
+
+    # ==========================================================
 
     # Domain feature engineering (added columns computed from X_user)
     X_all = engineer_features(X_user)
@@ -888,7 +882,6 @@ def train_advanced(
         "numeric_defaults": numeric_defaults,
         "threshold": float(best_overall["threshold"]),
         "risk_thresholds": {"low": 0.33, "medium": 0.67},
-        "target_mapping": target_info.get("mapping", {}),
         "feature_names_out": feature_names_out,
         "top_features_global": feature_importances_top,
         "primary_explainer": best_single_used_for_explain,
