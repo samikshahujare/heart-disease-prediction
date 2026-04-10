@@ -173,15 +173,16 @@ def predict_single(features: Dict[str, Any]) -> Dict[str, Any]:
     try:
         X_trans = preprocessor.transform(df_all)
 
-        # ✅ FIXED LOGIC (IMPORTANT)
+        # ✅ CORRECT LOGIC (FINAL FIX)
         raw_pred = int(model.predict(X_trans)[0])
+        proba = model.predict_proba(X_trans)[0]
 
-# 🔥 FIX: flip prediction
-        pred = 1 - raw_pred
+        classes = list(model.classes_)
+        disease_index = classes.index(1)  # ensures correct mapping
 
-        # 🔥 FIX: flip probability
-        prob = float(model.predict_proba(X_trans)[0][1])
-        
+        prob = float(proba[disease_index])
+        pred = raw_pred
+
     except Exception as e:
         raise RuntimeError(f"Prediction pipeline failed: {e}") from e
 
