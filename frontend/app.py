@@ -6,7 +6,7 @@ import requests
 import streamlit as st
 
 # Replace with your deployed Render backend URL
-API_URL = "https://your-render-url.onrender.com/predict"
+API_URL = "https://heart-disease-prediction-1-ghla.onrender.com/predict"
 
 
 def _css() -> None:
