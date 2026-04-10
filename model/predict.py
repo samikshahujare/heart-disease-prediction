@@ -174,9 +174,13 @@ def predict_single(features: Dict[str, Any]) -> Dict[str, Any]:
         X_trans = preprocessor.transform(df_all)
 
         # ✅ FIXED LOGIC (IMPORTANT)
-        pred = int(model.predict(X_trans)[0])
-        prob = float(model.predict_proba(X_trans)[0][pred])
+        raw_pred = int(model.predict(X_trans)[0])
 
+# 🔥 FIX: flip prediction
+        pred = 1 - raw_pred
+
+        # 🔥 FIX: flip probability
+        prob = float(model.predict_proba(X_trans)[0][1])
     except Exception as e:
         raise RuntimeError(f"Prediction pipeline failed: {e}") from e
 
